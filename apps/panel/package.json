@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start --port 3200",
     "typecheck": "next typegen && tsc --noEmit",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file-if-exists=.env src/db/migrate-cli.ts",
     "db:seed": "tsx --env-file-if-exists=.env src/db/seed-cli.ts"
@@ -16,6 +16,7 @@
   "dependencies": {
     "@node-rs/argon2": "2.2.2",
     "@stilus/shared": "workspace:*",
+    "better-auth": "1.7.28",
     "drizzle-orm": "0.45.4",
     "next": "16.4.6",
     "postgres": "4.1.1",

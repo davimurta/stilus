@@ -30,7 +30,11 @@ export default defineConfig({
           globalSetup: ["apps/panel/test/global-setup.ts"],
           setupFiles: ["apps/panel/test/setup.ts"],
           fileParallelism: false,
-          env: { DATABASE_URL: testDatabaseUrl },
+          env: {
+            DATABASE_URL: testDatabaseUrl,
+            BETTER_AUTH_SECRET: "test-only-better-auth-secret-000000000000",
+            BETTER_AUTH_URL: "http://panel.test",
+          },
         },
       },
     ],

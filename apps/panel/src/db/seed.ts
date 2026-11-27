@@ -1,8 +1,9 @@
-import { hash } from "@node-rs/argon2";
+import { eq } from "drizzle-orm";
 import type { Database } from "./client";
 import { exampleSiteTexts } from "./example-site-texts";
 import { memberships, sites, texts, users } from "./schema";
 import { hashSiteApiKey } from "../lib/site-auth";
+import { createUserWithPassword, setUserPassword } from "../lib/users";
 
 export type SeedOptions = {
   adminEmail: string;
@@ -18,19 +19,14 @@ export type SeedOptions = {
  * Idempotent: running it twice keeps existing text values (edits survive a re-seed).
  */
 export async function seed(db: Database, options: SeedOptions): Promise<{ textCount: number }> {
-  const passwordHash = await hash(options.adminPassword);
+  const email = options.adminEmail.toLowerCase();
+  const [existing] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  const admin =
+    existing ??
+    (await createUserWithPassword(db, { name: "Admin", email, password: options.adminPassword }));
+  if (existing) await setUserPassword(db, existing.id, options.adminPassword);
 
   return db.transaction(async (tx) => {
-    const [admin] = await tx
-      .insert(users)
-      .values({ name: "Admin", email: options.adminEmail.toLowerCase(), passwordHash })
-      .onConflictDoUpdate({
-        target: users.email,
-        set: { passwordHash },
-      })
-      .returning({ id: users.id });
-    if (!admin) throw new Error("Seed failed to upsert the admin user.");
-
     await tx
       .insert(sites)
       .values({

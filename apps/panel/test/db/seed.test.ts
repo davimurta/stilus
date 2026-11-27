@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { isValidTextKey } from "@stilus/shared";
 import { exampleSiteTexts } from "@/db/example-site-texts";
-import { sites, texts, users } from "@/db/schema";
+import { accounts, sites, texts, users } from "@/db/schema";
 import { seed } from "@/db/seed";
 import { authenticateSite } from "@/lib/site-auth";
 import { db } from "../helpers";
@@ -29,7 +29,10 @@ describe("development seed", () => {
     expect(result.textCount).toBe(exampleSiteTexts.length);
     const [admin] = await db().select().from(users);
     expect(admin?.email).toBe("admin@example.com");
-    expect(admin?.passwordHash).toMatch(/^\$argon2id\$/);
+    const [account] = await db().select().from(accounts);
+    expect(account?.userId).toBe(admin?.id);
+    expect(account?.providerId).toBe("credential");
+    expect(account?.password).toMatch(/^\$argon2id\$/);
 
     const rows = await db().select().from(texts).where(eq(texts.siteId, options.siteId));
     expect(rows).toHaveLength(exampleSiteTexts.length);

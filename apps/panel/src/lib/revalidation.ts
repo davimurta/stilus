@@ -1,5 +1,5 @@
 import { SIGNATURE_HEADER, signWebhookBody } from "@stilus/shared";
-import { eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import type { Database } from "../db/client";
 import { activityLog, sites } from "../db/schema";
 
@@ -53,7 +53,15 @@ export async function notifySite(
         cache: "no-store",
         signal: AbortSignal.timeout(timeoutMs),
       });
-      if (response.ok) return true;
+      if (response.ok) {
+        await db.insert(activityLog).values({
+          userId: input.userId,
+          siteId: input.siteId,
+          action: "revalidate.sent",
+          detail: JSON.stringify({ keys: input.keys }),
+        });
+        return true;
+      }
       lastError = `HTTP ${response.status}`;
     } catch (error) {
       lastError = error instanceof Error ? error.message : String(error);
@@ -67,4 +75,36 @@ export async function notifySite(
     detail: JSON.stringify({ keys: input.keys, attempts: delays.length, error: lastError }),
   });
   return false;
+}
+
+export type RevalidationStatus = { pending: false } | { pending: true; since: Date; error: string };
+
+/** Pending when the latest revalidation attempt of the site failed. */
+export async function getRevalidationStatus(
+  db: Database,
+  siteId: string,
+): Promise<RevalidationStatus> {
+  const [latest] = await db
+    .select({
+      action: activityLog.action,
+      detail: activityLog.detail,
+      createdAt: activityLog.createdAt,
+    })
+    .from(activityLog)
+    .where(
+      and(
+        eq(activityLog.siteId, siteId),
+        inArray(activityLog.action, ["revalidate.sent", "revalidate.failed"]),
+      ),
+    )
+    .orderBy(desc(activityLog.createdAt))
+    .limit(1);
+  if (!latest || latest.action === "revalidate.sent") return { pending: false };
+  let error = "";
+  try {
+    error = String((JSON.parse(latest.detail ?? "{}") as { error?: unknown }).error ?? "");
+  } catch {
+    // Keep the generic message.
+  }
+  return { pending: true, since: latest.createdAt, error };
 }

@@ -108,7 +108,7 @@ describe("PUT /api/v1/sites/{siteId}/texts/{key}", () => {
     const { site, user, token } = await setup();
     await put(site.id, "home.hero.title", { value: "Novo" }, token);
 
-    const log = await db().select().from(activityLog);
+    const log = await db().select().from(activityLog).where(eq(activityLog.action, "text.updated"));
     expect(log).toEqual([
       expect.objectContaining({
         userId: user.id,
@@ -117,6 +117,16 @@ describe("PUT /api/v1/sites/{siteId}/texts/{key}", () => {
         detail: JSON.stringify({ key: "home.hero.title" }),
       }),
     ]);
+  });
+
+  it("logs a successful revalidation", async () => {
+    const { site, token } = await setup();
+    await put(site.id, "home.hero.title", { value: "Novo" }, token);
+    const sent = await db()
+      .select()
+      .from(activityLog)
+      .where(eq(activityLog.action, "revalidate.sent"));
+    expect(sent).toHaveLength(1);
   });
 
   it("calls the site's revalidation webhook with a valid signature and fresh timestamp", async () => {

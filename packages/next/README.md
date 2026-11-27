@@ -22,6 +22,15 @@ import { createStilusHandlers } from "@stilus/next";
 export const { GET, POST } = createStilusHandlers();
 ```
 
+Editor loader, once in the root layout (renders nothing):
+
+```tsx
+import { StilusLoader } from "@stilus/next/loader";
+
+// inside <body>
+<StilusLoader />;
+```
+
 Login page for editors, e.g. `app/editar/page.tsx` (static, no cookies read on render):
 
 ```tsx
@@ -83,3 +92,19 @@ export async function generateMetadata() {
 - The webhook is rejected with a bad signature, a `ts` more than 5 minutes away, or another
   `siteId`. On success it calls `revalidateTag("stilus:<siteId>", { expire: 0 })`, so the next
   request renders the new text.
+
+## Editor overlay
+
+- The loader checks the readable `stilus_edit=1` cookie in the browser. Without it nothing else is
+  downloaded; with it, the overlay is fetched with a dynamic `import()`. The e2e suite checks that
+  no script downloaded by an anonymous visitor contains overlay code.
+- Fixed toolbar: editing on/off, status (salvando, salvo, erro, atualização pendente), undo, sair.
+- With editing on, editable texts are outlined on hover. A click edits the text in place (plain
+  text, `contentEditable="plaintext-only"`); on links and buttons it edits instead of navigating.
+  Enter or leaving the field saves, Shift+Enter adds a line break, Esc cancels. Pasted content is
+  inserted as plain text.
+- After a save or undo the page reloads, so React never works on a DOM it did not render; the
+  status message is shown again after the reload.
+- Undo walks back the texts saved in this browser tab, one step per click.
+- Errors from the central API (for example the character limit) are shown in the toolbar and the
+  text stays in edit mode.

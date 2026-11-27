@@ -33,3 +33,23 @@ export function readServerConfig(env: Record<string, string | undefined> = proce
     problem: null,
   } as const;
 }
+
+const handlerConfigSchema = serverConfigSchema.extend({
+  STILUS_REVALIDATE_SECRET: z.string().min(32),
+});
+
+export type HandlerConfig = ServerConfig & { revalidateSecret: string };
+
+/** Settings needed by the route handlers (login, save, revalidation webhook). */
+export function readHandlerConfig(
+  env: Record<string, string | undefined> = process.env,
+): HandlerConfig | null {
+  const parsed = handlerConfigSchema.safeParse(env);
+  if (!parsed.success) return null;
+  return {
+    siteId: parsed.data.STILUS_SITE_ID,
+    apiUrl: parsed.data.STILUS_API_URL.replace(/\/+$/, ""),
+    siteKey: parsed.data.STILUS_SITE_KEY,
+    revalidateSecret: parsed.data.STILUS_REVALIDATE_SECRET,
+  };
+}

@@ -185,6 +185,39 @@ test("typed HTML is saved as plain text and rendered escaped", async ({ page, co
   await expect(hours(page)).toHaveText(HOURS_ORIGINAL);
 });
 
+test("Shift+Enter adds a line break to a multiline text, rendered as <br>", async ({
+  page,
+  context,
+}) => {
+  await loginInBrowser(context);
+  await page.goto(`${SITE_URL}/sobre`);
+  const body = page.locator('[data-stilus-key="about.process.body"]');
+
+  await body.click();
+  await page.keyboard.type("Primeira linha");
+  await page.keyboard.press("Shift+Enter");
+  await page.keyboard.type("Segunda linha");
+  await afterCall(page, "save", () => page.keyboard.press("Enter"));
+  await expectReloadedWith(page, "Salvo.");
+
+  await expect(body.locator("br")).toHaveCount(1);
+  expect(await rawHtml(page, "/sobre")).toContain(
+    'data-stilus-key="about.process.body">Primeira linha<br/>Segunda linha</p>',
+  );
+
+  // Esc restores the line break too.
+  await body.click();
+  await page.keyboard.type("descartado");
+  await page.keyboard.press("Escape");
+  await expect(body.locator("br")).toHaveCount(1);
+
+  await afterCall(page, "undo", () =>
+    toolbar(page).getByRole("button", { name: "Desfazer" }).click(),
+  );
+  await expectReloadedWith(page, "Desfeito.");
+  await expect(body.locator("br")).toHaveCount(0);
+});
+
 test("in edit mode a link is edited instead of followed; with editing off it navigates", async ({
   page,
   context,

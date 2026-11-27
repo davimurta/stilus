@@ -1,0 +1,14 @@
+/contexto/
+node_modules/
+dist/
+.next/
+.turbo/
+coverage/
+test-results/
+playwright-report/
+next-env.d.ts
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.DS_Store

@@ -1,0 +1,128 @@
+:root {
+  --fg: #1d1d1f;
+  --muted: #5f6368;
+  --accent: #2f5d50;
+  --bg: #fafaf7;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  line-height: 1.6;
+}
+
+a {
+  color: var(--accent);
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.site-header {
+  border-bottom: 1px solid #e3e3dc;
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 1rem;
+}
+
+.brand {
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--fg);
+}
+
+.site-header nav {
+  display: flex;
+  gap: 1.25rem;
+}
+
+main {
+  padding-block: 3rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+
+.lead {
+  font-size: 1.2rem;
+  color: var(--muted);
+}
+
+.button {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  padding: 0;
+  list-style: none;
+  margin-top: 3rem;
+}
+
+.features li {
+  background: #fff;
+  border: 1px solid #e3e3dc;
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.features h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+
+.contact-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 480px;
+}
+
+.contact-form label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+  font: inherit;
+  padding: 0.5rem;
+  border: 1px solid #c9c9c0;
+  border-radius: 4px;
+}
+
+.site-footer {
+  border-top: 1px solid #e3e3dc;
+  padding-block: 2rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}

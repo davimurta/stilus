@@ -15,6 +15,11 @@ export const E2E_DATABASE_URL =
 export const SITE_ID = "00000000-0000-4000-8000-000000000001";
 export const SITE_KEY = "stilus_sk_e2e_only_0000000000000000000000000000";
 export const REVALIDATE_SECRET = "e2e-only-revalidate-secret-000000000000";
+export const BETTER_AUTH_SECRET = "e2e-only-better-auth-secret-0000000000000";
+
+export const ADMIN = { email: "admin@example.com", password: "e2e-admin-password" };
+/** Has an account but no membership on the example site. */
+export const OUTSIDER = { email: "outsider@example.com", password: "e2e-outsider-password" };
 
 /** Texts changed in the database before the site is built, to prove they come from the API. */
 export const API_TEXTS = {

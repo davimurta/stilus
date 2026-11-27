@@ -1,10 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 import {
+  BETTER_AUTH_SECRET,
   DEAD_API_PORT,
   E2E_DATABASE_URL,
   OFFLINE_SITE_PORT,
   PANEL_PORT,
   PANEL_URL,
+  REVALIDATE_SECRET,
   SITE_ID,
   SITE_KEY,
   SITE_PORT,
@@ -13,7 +15,11 @@ import {
 
 // Needs `pnpm build` (panel) and `pnpm db:up` first. Static/ISR behaviour only exists in
 // production builds, so the example site is built here, against the running panel.
-const siteEnv = { STILUS_SITE_ID: SITE_ID, STILUS_SITE_KEY: SITE_KEY };
+const siteEnv = {
+  STILUS_SITE_ID: SITE_ID,
+  STILUS_SITE_KEY: SITE_KEY,
+  STILUS_REVALIDATE_SECRET: REVALIDATE_SECRET,
+};
 
 export default defineConfig({
   testDir: "./e2e",
@@ -31,7 +37,11 @@ export default defineConfig({
       name: "panel",
       command: `tsx e2e/support/prepare-db.ts && pnpm --filter panel exec next start --port ${PANEL_PORT}`,
       url: `${PANEL_URL}/api/v1/sites/${SITE_ID}/texts`,
-      env: { DATABASE_URL: E2E_DATABASE_URL },
+      env: {
+        DATABASE_URL: E2E_DATABASE_URL,
+        BETTER_AUTH_SECRET,
+        BETTER_AUTH_URL: PANEL_URL,
+      },
       reuseExistingServer: false,
       timeout: 120_000,
     },

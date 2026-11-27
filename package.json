@@ -7,7 +7,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "lint": "turbo run lint && eslint e2e \"*.ts\" \"*.js\"",
+    "lint": "turbo run lint && eslint e2e \"*.ts\" \"*.js\" --max-warnings 0",
     "typecheck": "turbo run typecheck && tsc -p tsconfig.json",
     "test": "vitest run",
     "test:e2e": "playwright test",
@@ -21,17 +21,18 @@
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "@playwright/test": "1.65.1",
+    "@stilus/shared": "workspace:*",
     "@types/node": "24.19.4",
+    "drizzle-orm": "0.45.4",
     "eslint": "9.39.5",
     "globals": "17.14.0",
+    "postgres": "4.1.1",
     "prettier": "3.10.1",
+    "tsx": "4.23.15",
     "turbo": "2.11.13",
     "typescript": "6.0.3",
     "typescript-eslint": "8.74.0",
     "vite": "8.3.8",
-    "vitest": "5.1.2",
-    "tsx": "4.23.15",
-    "postgres": "4.1.1",
-    "drizzle-orm": "0.45.4"
+    "vitest": "5.1.2"
   }
 }

@@ -8,7 +8,7 @@ Central Stilus service: REST API (`/api/v1`) and, from Phase 2 on, the admin pan
 pnpm db:up                         # from the repo root: Postgres 17 on localhost:54329
 cp apps/panel/.env.example apps/panel/.env
 pnpm --filter panel db:migrate
-pnpm --filter panel db:seed        # admin user, example site and its texts (dev only)
+pnpm --filter panel db:seed        # admin user (SEED_ADMIN_*), example site and its texts (dev only)
 pnpm --filter panel dev            # http://localhost:3200
 ```
 
@@ -32,6 +32,40 @@ Auth: `Authorization: Bearer <site_api_key>`.
 
 Only `active` texts are returned. An unknown site and a wrong key both answer `401 unauthorized`.
 A malformed `siteId` answers `400 invalid_request`.
+
+### `POST /api/v1/auth/login`
+
+Body `{ email, password }`. Answers `{ token, user, sites }`, where `sites` lists the sites the
+user can edit (`role`: `admin` | `editor`). Wrong email or password: `401 invalid_credentials`.
+Sessions are Better Auth sessions (7 days); send the token as `Authorization: Bearer <token>`.
+
+### `POST /api/v1/auth/logout`
+
+Revokes the bearer session. Always `200`.
+
+### `PUT /api/v1/sites/{siteId}/texts/{key}`
+
+Auth: user bearer token. Body `{ value }`. Answers `{ key, value, changed, revalidated }`.
+
+Checks, in order: session (`401`), params (`400`), membership on the site (`403 forbidden`),
+text exists (`404`), value (`422 too_long` above `max_length` or 10 000 characters,
+`422 invalid_value` for control characters or a line break in a `line` text).
+Values are plain text, stored as typed and escaped when rendered.
+
+Every change records a version (the first edit also records the value it replaced) and an
+`activity_log` entry, then calls the site's revalidation webhook. `revalidated: false` means the
+text was saved but the site could not be notified after 3 attempts (logged as
+`revalidate.failed`).
+
+### `POST /api/v1/sites/{siteId}/texts/{key}/undo`
+
+Same auth and permission. Removes the latest version and restores the previous one, step by step
+back to the original value; then `409 nothing_to_undo`.
+
+### Revalidation webhook (central to site)
+
+`POST {site.revalidate_url}` with body `{ siteId, keys, ts }` (ts in ms) and header
+`x-stilus-signature`: HMAC-SHA256 hex of the raw body with the site's `revalidate_secret`.
 
 ## Tests
 

@@ -11,6 +11,25 @@ Server-only environment variables (never prefix them with `NEXT_PUBLIC_`):
 STILUS_SITE_ID=<site uuid>
 STILUS_API_URL=https://your-stilus-panel.example.com
 STILUS_SITE_KEY=<site API key>
+STILUS_REVALIDATE_SECRET=<site revalidate secret, 32+ characters>
+```
+
+Route handlers, in `app/api/stilus/[...stilus]/route.ts`:
+
+```ts
+import { createStilusHandlers } from "@stilus/next";
+
+export const { GET, POST } = createStilusHandlers();
+```
+
+Login page for editors, e.g. `app/editar/page.tsx` (static, no cookies read on render):
+
+```tsx
+import { LoginForm } from "@stilus/next/client";
+
+export default function EditLoginPage() {
+  return <LoginForm />;
+}
 ```
 
 If they are missing or invalid, the site still builds and renders the default texts (a warning
@@ -47,3 +66,20 @@ export async function generateMetadata() {
   stay static/ISR. The 1h interval is a safety net in case a revalidation webhook is lost.
 - Any failure (network, 5 s timeout, non-200, unexpected payload) falls back to the default
   texts. A failed response is not cached, so the next revalidation tries again.
+
+## Route handlers
+
+| Route                         | What it does                                                                       |
+| ----------------------------- | ---------------------------------------------------------------------------------- |
+| `POST /api/stilus/login`      | Relays `{ email, password }`; sets `stilus_session` (httpOnly) and `stilus_edit=1` |
+| `POST /api/stilus/logout`     | Revokes the session centrally and clears both cookies                              |
+| `POST /api/stilus/save`       | `{ key, value }`, relayed to the central API with the editor's token               |
+| `POST /api/stilus/undo`       | `{ key }`, relayed the same way                                                    |
+| `POST /api/stilus/revalidate` | Signed webhook from the central API; calls `revalidateTag`                         |
+
+- Login, logout, save and undo only accept requests whose `Origin` matches the site (CSRF).
+- Permission is always decided by the central API. `stilus_edit` only turns the editor UI on.
+- The site API key is never sent with editor requests, and never reaches the browser.
+- The webhook is rejected with a bad signature, a `ts` more than 5 minutes away, or another
+  `siteId`. On success it calls `revalidateTag("stilus:<siteId>", { expire: 0 })`, so the next
+  request renders the new text.

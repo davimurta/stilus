@@ -1,0 +1,38 @@
+// Panel interface texts (pt-BR), kept out of JSX so they can be translated later.
+export const messages = {
+  appTitle: "Stilus",
+  login: {
+    title: "Entrar no painel",
+    email: "E-mail",
+    password: "Senha",
+    submit: "Entrar",
+    submitting: "Entrando…",
+    invalid: "E-mail ou senha incorretos.",
+    blocked: "Muitas tentativas de login. Aguarde 15 minutos e tente novamente.",
+    missing: "Informe e-mail e senha.",
+  },
+  nav: { sites: "Sites", logout: "Sair" },
+  sites: {
+    title: "Seus sites",
+    empty: "Você ainda não tem acesso a nenhum site.",
+    role: { admin: "Administrador", editor: "Editor" } as Record<string, string>,
+  },
+  texts: {
+    title: (site: string) => `Textos de ${site}`,
+    search: "Buscar",
+    searchPlaceholder: "Chave, texto ou descrição",
+    page: "Página",
+    allPages: "Todas as páginas",
+    status: "Situação",
+    statusActive: "Em uso",
+    statusOrphan: "Órfãos",
+    statusAll: "Todos",
+    filter: "Filtrar",
+    empty: "Nenhum texto encontrado.",
+    count: (n: number) => (n === 1 ? "1 texto" : `${n} textos`),
+    columns: { key: "Chave", value: "Texto", page: "Página", updated: "Atualizado em" },
+    badgeOrphan: "Órfão",
+    badgeNew: "Novo",
+    orphanHelp: "Órfão: a chave não aparece mais no código do site.",
+  },
+} as const;

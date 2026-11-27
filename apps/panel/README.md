@@ -1,6 +1,14 @@
 # panel
 
-Central Stilus service: REST API (`/api/v1`) and, from Phase 2 on, the admin panel. Postgres + Drizzle.
+Central Stilus service: REST API (`/api/v1`) and the admin panel. Postgres + Drizzle.
+
+## Panel
+
+- `/entrar`: login (Better Auth cookie session, same 5-failures-in-15-minutes limit as the API).
+- `/sites`: sites the user is a member of.
+- `/sites/{siteId}`: texts of a site with search (key, text, description), page filter and
+  status filter (in use / orphan / all). Badges: **Órfão** (key no longer in the code) and
+  **Novo** (created in the last 7 days). A site the user is not a member of answers 404.
 
 ## Local setup
 

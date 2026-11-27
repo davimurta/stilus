@@ -1,0 +1,165 @@
+:root {
+  --fg: #1d1d1f;
+  --muted: #5f6368;
+  --line: #e3e3dc;
+  --accent: #2f5d50;
+  --danger: #b3261e;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  color: var(--fg);
+  background: #fafaf7;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  line-height: 1.5;
+}
+a {
+  color: var(--accent);
+}
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+h1 {
+  font-size: 1.6rem;
+  margin: 0 0 1rem;
+}
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+.panel-header .brand {
+  font-weight: 700;
+  color: var(--fg);
+  text-decoration: none;
+}
+.panel-header .user {
+  margin-left: auto;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+.stack {
+  display: grid;
+  gap: 1rem;
+}
+.narrow {
+  max-width: 360px;
+}
+.field {
+  display: grid;
+  gap: 0.25rem;
+}
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+input,
+select,
+textarea {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #c9c9c0;
+  border-radius: 6px;
+}
+button {
+  padding: 0.45rem 0.9rem;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+button.link {
+  background: none;
+  color: var(--accent);
+  padding: 0;
+  text-decoration: underline;
+}
+button.secondary {
+  background: #e8e8e2;
+  color: var(--fg);
+}
+.error {
+  color: var(--danger);
+  margin: 0;
+}
+.muted {
+  color: var(--muted);
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+th,
+td {
+  text-align: left;
+  padding: 0.55rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+th {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+td.key {
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+td.value {
+  max-width: 420px;
+  white-space: pre-line;
+}
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.35rem;
+}
+.badge.orphan {
+  background: #fde8e7;
+  color: var(--danger);
+}
+.badge.new {
+  background: #e3f1ea;
+  color: var(--accent);
+}
+.site-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.site-list li {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+}

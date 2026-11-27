@@ -7,6 +7,7 @@ export type ApiErrorCode =
   | "too_long"
   | "invalid_value"
   | "nothing_to_undo"
+  | "too_many_attempts"
   | "internal_error";
 
 const STATUS: Record<ApiErrorCode, number> = {
@@ -18,6 +19,7 @@ const STATUS: Record<ApiErrorCode, number> = {
   too_long: 422,
   invalid_value: 422,
   nothing_to_undo: 409,
+  too_many_attempts: 429,
   internal_error: 500,
 };
 

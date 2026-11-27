@@ -2,6 +2,7 @@ import { z } from "zod";
 import { getDb } from "@/db/client";
 import { apiError, apiJson } from "@/lib/api-errors";
 import { getAuth } from "@/lib/auth";
+import { isLoginBlocked, recordLoginFailure } from "@/lib/login-throttle";
 import { readJson } from "@/lib/request";
 import { listUserSites } from "@/lib/users";
 
@@ -14,13 +15,24 @@ export async function POST(request: Request): Promise<Response> {
   const body = await readJson(request, bodySchema);
   if (!body.ok) return body.response;
 
+  const db = getDb();
+  const email = body.data.email.toLowerCase();
+  // Checked before the password, so a blocked account gives no hint about the password.
+  if (await isLoginBlocked(db, email)) {
+    return apiError(
+      "too_many_attempts",
+      "Muitas tentativas de login. Aguarde 15 minutos e tente novamente.",
+    );
+  }
+
   let result;
   try {
     result = await getAuth().api.signInEmail({
-      body: { email: body.data.email.toLowerCase(), password: body.data.password },
+      body: { email, password: body.data.password },
       returnHeaders: true,
     });
   } catch {
+    await recordLoginFailure(db, email);
     // Same answer for unknown email and wrong password.
     return apiError("invalid_credentials", "E-mail ou senha incorretos.");
   }
@@ -29,7 +41,7 @@ export async function POST(request: Request): Promise<Response> {
   if (!token) return apiError("internal_error", "Login did not return a session token.");
 
   const { user } = result.response;
-  const sites = await listUserSites(getDb(), user.id);
+  const sites = await listUserSites(db, user.id);
   return apiJson({
     token,
     user: { id: user.id, name: user.name, email: user.email },

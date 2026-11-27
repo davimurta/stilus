@@ -1,8 +1,10 @@
+import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
+import { activityLog } from "@/db/schema";
 import { POST as login } from "@/app/api/v1/auth/login/route";
 import { POST as logout } from "@/app/api/v1/auth/logout/route";
 import { getUserFromRequest } from "@/lib/auth";
-import { TEST_PASSWORD, addMember, createSite, createUser } from "../helpers";
+import { TEST_PASSWORD, addMember, createSite, createUser, db } from "../helpers";
 
 function loginRequest(body: unknown) {
   return login(
@@ -75,6 +77,59 @@ describe("POST /api/v1/auth/login", () => {
     const response = await loginRequest(body);
     expect(response.status).toBe(400);
     expect((await response.json()).error.code).toBe("invalid_request");
+  });
+});
+
+describe("login rate limiting", () => {
+  const wrong = { email: "editor@example.com", password: "wrong-password" };
+  const right = { email: "editor@example.com", password: TEST_PASSWORD };
+
+  it("blocks the email after 5 failures, even with the right password", async () => {
+    await createUser("editor@example.com");
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      expect((await loginRequest(wrong)).status).toBe(401);
+    }
+
+    const blocked = await loginRequest(right);
+
+    expect(blocked.status).toBe(429);
+    expect((await blocked.json()).error.code).toBe("too_many_attempts");
+  });
+
+  it("counts failures per email, in any letter case", async () => {
+    await createUser("editor@example.com");
+    await createUser("other@example.com");
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      await loginRequest({ ...wrong, email: attempt % 2 ? "EDITOR@example.com" : wrong.email });
+    }
+    expect((await loginRequest(right)).status).toBe(429);
+    expect(
+      (await loginRequest({ email: "other@example.com", password: TEST_PASSWORD })).status,
+    ).toBe(200);
+  });
+
+  it("allows 4 failures and then a successful login", async () => {
+    await createUser("editor@example.com");
+    for (let attempt = 0; attempt < 4; attempt += 1) await loginRequest(wrong);
+    expect((await loginRequest(right)).status).toBe(200);
+  });
+
+  it("lets the email in again once the failures are older than 15 minutes", async () => {
+    await createUser("editor@example.com");
+    for (let attempt = 0; attempt < 5; attempt += 1) await loginRequest(wrong);
+    await db()
+      .update(activityLog)
+      .set({ createdAt: new Date(Date.now() - 16 * 60 * 1000) })
+      .where(eq(activityLog.action, "auth.login_failed"));
+
+    expect((await loginRequest(right)).status).toBe(200);
+  });
+
+  it("also counts failures for unknown emails", async () => {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      await loginRequest({ email: "ghost@example.com", password: "x" });
+    }
+    expect((await loginRequest({ email: "ghost@example.com", password: "x" })).status).toBe(429);
   });
 });
 

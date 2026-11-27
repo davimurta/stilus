@@ -12,13 +12,13 @@ export async function GET(
 ): Promise<Response> {
   const { siteId } = await context.params;
   if (!siteIdSchema.safeParse(siteId).success) {
-    return apiError(400, "invalid_request", "siteId must be a UUID.");
+    return apiError("invalid_request", "siteId must be a UUID.");
   }
 
   const db = getDb();
   const auth = await authenticateSite(db, siteId, request.headers.get("authorization"));
   if (!auth.ok) {
-    return apiError(401, "unauthorized", "Missing or invalid site API key.");
+    return apiError("unauthorized", "Missing or invalid site API key.");
   }
 
   const textMap = await getTextMap(db, auth.siteId);

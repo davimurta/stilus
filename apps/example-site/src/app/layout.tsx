@@ -1,3 +1,4 @@
+import { StilusLoader } from "@stilus/next/loader";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/site-footer";
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <SiteHeader />
         <main className="container">{children}</main>
         <SiteFooter />
+        <StilusLoader />
       </body>
     </html>
   );

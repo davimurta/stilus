@@ -53,17 +53,23 @@ describe("scanProject", () => {
     expect(scanProject(root).keys.map((key) => key.key)).toEqual(["home.a"]);
   });
 
-  it("finds exactly the texts of the example site, with the seed defaults and kinds", () => {
+  it("finds exactly the texts of the example site, with the seed defaults, kinds and pages", () => {
     const exampleSite = fileURLToPath(new URL("../../../apps/example-site", import.meta.url));
     const result = scanProject(exampleSite);
 
     expect(result.errors).toEqual([]);
     expect(result.warnings).toEqual([]);
     const found = Object.fromEntries(
-      result.keys.map((key) => [key.key, { value: key.defaultValue, kind: key.kind }]),
+      result.keys.map((key) => [
+        key.key,
+        { value: key.defaultValue, kind: key.kind, page: key.page },
+      ]),
     );
     const seed = Object.fromEntries(
-      exampleSiteTexts.map((text) => [text.key, { value: text.value, kind: text.kind }]),
+      exampleSiteTexts.map((text) => [
+        text.key,
+        { value: text.value, kind: text.kind, page: text.page },
+      ]),
     );
     expect(found).toEqual(seed);
   });

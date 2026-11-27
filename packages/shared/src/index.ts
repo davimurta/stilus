@@ -8,3 +8,5 @@ export {
   verifyWebhook,
 } from "./webhook.js";
 export type { RevalidatePayload, WebhookVerification } from "./webhook.js";
+export { MAX_SYNC_KEYS, syncKeySchema, syncRequestSchema } from "./sync.js";
+export type { SyncKey, SyncRequest, SyncResult } from "./sync.js";

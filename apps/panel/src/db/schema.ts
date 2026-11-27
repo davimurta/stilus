@@ -134,6 +134,7 @@ export const texts = pgTable(
     kind: textKind("kind").notNull().default("line"),
     maxLength: integer("max_length"),
     status: textStatus("status").notNull().default("active"),
+    createdAt: createdAt(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
   },

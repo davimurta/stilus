@@ -15,6 +15,13 @@
       "when": 1795755408592,
       "tag": "0001_auth_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795757277968,
+      "tag": "0002_texts_created_at",
+      "breakpoints": true
     }
   ]
 }

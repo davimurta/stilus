@@ -1,6 +1,8 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { nextCookies } from "better-auth/next-js";
 import { bearer } from "better-auth/plugins";
+import { headers } from "next/headers";
 import { z } from "zod";
 import { getDb } from "../db/client";
 import { accounts, sessions, users, verifications } from "../db/schema";
@@ -29,8 +31,9 @@ function createAuth() {
     },
     session: { expiresIn: 60 * 60 * 24 * 7 },
     advanced: { database: { generateId: "uuid" } },
-    // Sessions travel as `Authorization: Bearer <token>` from the site relay, not as cookies.
-    plugins: [bearer()],
+    // Sites relay sessions as `Authorization: Bearer <token>`. The panel itself uses cookies,
+    // set from Server Actions by nextCookies() (must be the last plugin).
+    plugins: [bearer(), nextCookies()],
   });
 }
 
@@ -52,6 +55,13 @@ export async function getUserFromRequest(request: Request): Promise<Authenticate
   const session = await getAuth().api.getSession({
     headers: new Headers({ authorization }),
   });
+  if (!session) return null;
+  return { id: session.user.id, name: session.user.name, email: session.user.email };
+}
+
+/** The user logged in to the panel (cookie session), or null. For Server Components/Actions. */
+export async function getPanelUser(): Promise<AuthenticatedUser | null> {
+  const session = await getAuth().api.getSession({ headers: await headers() });
   if (!session) return null;
   return { id: session.user.id, name: session.user.name, email: session.user.email };
 }

@@ -61,7 +61,10 @@ export async function getUserFromRequest(request: Request): Promise<Authenticate
 
 /** The user logged in to the panel (cookie session), or null. For Server Components/Actions. */
 export async function getPanelUser(): Promise<AuthenticatedUser | null> {
-  const session = await getAuth().api.getSession({ headers: await headers() });
+  // Read the request first: it marks the page as dynamic before any env is needed,
+  // so `next build` never prerenders panel pages.
+  const requestHeaders = await headers();
+  const session = await getAuth().api.getSession({ headers: requestHeaders });
   if (!session) return null;
   return { id: session.user.id, name: session.user.name, email: session.user.email };
 }

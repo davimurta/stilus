@@ -69,14 +69,16 @@ describe("Text", () => {
     expect(element.props.className).toBe("button");
   });
 
-  it("does not render the description", async () => {
+  it("does not render the description nor the multiline flag", async () => {
     stubApi({});
     const element = (await Text({
       k: "home.hero.title",
       description: "Título principal",
+      multiline: true,
       children: "Padrão",
     })) as Rendered;
     expect(element.props).not.toHaveProperty("description");
+    expect(element.props).not.toHaveProperty("multiline");
   });
 
   it("passes HTML from the API as a plain string child, never as markup", async () => {

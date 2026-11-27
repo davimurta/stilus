@@ -16,6 +16,8 @@ type TextOwnProps<T extends ElementType> = {
   as?: T;
   /** Shown to editors; read by the CLI. Not rendered. */
   description?: string;
+  /** Allows line breaks (rendered as <br>). Read by the CLI. Not rendered. */
+  multiline?: boolean;
 };
 
 export type TextProps<T extends ElementType = "span"> = TextOwnProps<T> &
@@ -39,8 +41,9 @@ export async function Text<T extends ElementType = "span">({
   k,
   children,
   as,
-  // Removed so it never reaches the DOM.
+  // Removed so they never reach the DOM.
   description,
+  multiline,
   ...rest
 }: TextProps<T>) {
   const value = await t(k, children);

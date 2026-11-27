@@ -20,7 +20,7 @@ export default function HomePage() {
         <Text as="h1" k="home.hero.title" description="Título principal">
           Consertos rápidos, feitos com cuidado
         </Text>
-        <Text as="p" className="lead" k="home.hero.lead">
+        <Text as="p" className="lead" multiline k="home.hero.lead">
           Há mais de 20 anos cuidando dos equipamentos da sua casa e da sua empresa.
         </Text>
         <Text as={Link} href="/contato" className="button" k="home.hero.cta">
@@ -33,7 +33,7 @@ export default function HomePage() {
           <Text as="h2" k="home.features.same-day.title">
             Atendimento no mesmo dia
           </Text>
-          <Text as="p" k="home.features.same-day.body">
+          <Text as="p" multiline k="home.features.same-day.body">
             Chamados abertos até as 14h são atendidos no mesmo dia útil.
           </Text>
         </li>
@@ -41,7 +41,7 @@ export default function HomePage() {
           <Text as="h2" k="home.features.warranty.title">
             Garantia de 90 dias
           </Text>
-          <Text as="p" k="home.features.warranty.body">
+          <Text as="p" multiline k="home.features.warranty.body">
             Todo serviço tem garantia por escrito, sem letras miúdas.
           </Text>
         </li>
@@ -49,7 +49,7 @@ export default function HomePage() {
           <Text as="h2" k="home.features.free-quote.title">
             Orçamento sem custo
           </Text>
-          <Text as="p" k="home.features.free-quote.body">
+          <Text as="p" multiline k="home.features.free-quote.body">
             Você só paga se aprovar o serviço.
           </Text>
         </li>

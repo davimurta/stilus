@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // Typecheck only: tests read the example-site seed from apps/panel.
+    "rootDir": "../..",
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["src"]
+}

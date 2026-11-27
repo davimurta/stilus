@@ -1,33 +1,52 @@
+import { Text, t } from "@stilus/next";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Contato",
-  description: "Fale com a Oficina Exemplo por telefone, e-mail ou formulário.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: await t("contact.meta.title", "Contato"),
+    description: await t(
+      "contact.meta.description",
+      "Fale com a Oficina Exemplo por telefone, e-mail ou formulário.",
+    ),
+  };
+}
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const [namePlaceholder, messagePlaceholder] = await Promise.all([
+    t("contact.form.name-placeholder", "Seu nome"),
+    t("contact.form.message-placeholder", "Conte o que precisa"),
+  ]);
+
   return (
     <>
-      <h1>Fale com a gente</h1>
-      <p className="lead">Respondemos em até um dia útil.</p>
+      <Text as="h1" k="contact.title">
+        Fale com a gente
+      </Text>
+      <Text as="p" className="lead" k="contact.lead">
+        Respondemos em até um dia útil.
+      </Text>
 
       <address>
-        <p>Telefone: (31) 0000-0000</p>
-        <p>Horário: segunda a sexta, das 8h às 18h</p>
+        <Text as="p" k="contact.phone">
+          Telefone: (31) 0000-0000
+        </Text>
+        <Text as="p" k="contact.hours">
+          Horário: segunda a sexta, das 8h às 18h
+        </Text>
       </address>
 
       <form className="contact-form" action="#" aria-label="Formulário de contato">
         <label>
-          Nome
-          <input name="name" type="text" placeholder="Seu nome" />
+          <Text k="contact.form.name-label">Nome</Text>
+          <input name="name" type="text" placeholder={namePlaceholder} />
         </label>
         <label>
-          Mensagem
-          <textarea name="message" rows={4} placeholder="Conte o que precisa" />
+          <Text k="contact.form.message-label">Mensagem</Text>
+          <textarea name="message" rows={4} placeholder={messagePlaceholder} />
         </label>
-        <button type="submit" className="button">
+        <Text as="button" type="submit" className="button" k="contact.form.submit">
           Enviar mensagem
-        </button>
+        </Text>
       </form>
     </>
   );

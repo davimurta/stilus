@@ -12,6 +12,10 @@
     "./client": {
       "types": "./dist/client/index.d.ts",
       "default": "./dist/client/index.js"
+    },
+    "./loader": {
+      "types": "./dist/client/loader-entry.d.ts",
+      "default": "./dist/client/loader-entry.js"
     }
   },
   "files": [

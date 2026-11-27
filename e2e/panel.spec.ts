@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN, OUTSIDER, PANEL_URL, SITE_ID } from "./support/env";
+import { ADMIN, OUTSIDER, PANEL_URL, SITE_ID, SITE_URL } from "./support/env";
 
 async function panelLogin(page: Page, credentials = ADMIN) {
   await page.goto(`${PANEL_URL}/entrar`);
@@ -63,4 +63,43 @@ test("logging out ends the panel session", async ({ page }) => {
   await expect(page).toHaveURL(`${PANEL_URL}/entrar`);
   await page.goto(`${PANEL_URL}/sites`);
   await expect(page).toHaveURL(`${PANEL_URL}/entrar`);
+});
+
+test("editing in the panel updates the site, and history restores the original", async ({
+  page,
+}) => {
+  const original = "Respondemos em até um dia útil.";
+  const rawContact = async () =>
+    (await page.request.get(`${SITE_URL}/contato`, { headers: { cookie: "" } })).text();
+
+  await panelLogin(page);
+  await expect(page).toHaveURL(`${PANEL_URL}/sites`);
+  await page.goto(`${PANEL_URL}/sites/${SITE_ID}`);
+  await page.getByRole("link", { name: "Editar contact.lead" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("contact.lead");
+
+  const editor = page.getByRole("form", { name: "Texto atual" });
+  const field = editor.getByLabel("Texto atual");
+  await expect(field).toHaveValue(original);
+  await expect(editor.getByText("31 de 160 caracteres")).toBeVisible();
+
+  await field.fill("x".repeat(161));
+  await expect(editor.getByText("Acima do limite de 160 caracteres.")).toBeVisible();
+  await expect(editor.getByRole("button", { name: "Salvar" })).toBeDisabled();
+
+  await field.fill("Respondemos em até 2 horas.");
+  await editor.getByRole("button", { name: "Salvar" }).click();
+  await expect(editor.getByRole("status")).toHaveText("Salvo. O site já foi atualizado.");
+  await expect.poll(rawContact, { timeout: 10_000 }).toContain(">Respondemos em até 2 horas.</p>");
+
+  const history = page.getByRole("region", { name: "Histórico" }).getByRole("listitem");
+  await expect(history).toHaveCount(2);
+  await expect(history.nth(0)).toContainText("Respondemos em até 2 horas.");
+  await expect(history.nth(0)).toContainText("Admin");
+  await expect(history.nth(1)).toContainText(original);
+
+  await history.nth(1).getByRole("button", { name: "Restaurar" }).click();
+  await expect(history).toHaveCount(3);
+  await expect(field).toHaveValue(original);
+  await expect.poll(rawContact, { timeout: 10_000 }).toContain(`>${original}</p>`);
 });

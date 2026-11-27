@@ -18,9 +18,10 @@ Status: accepted
   know `max_length` before saving. The limit is enforced by the central API and its message
   ("O texto pode ter no máximo N caracteres.") is shown while the text stays in edit mode.
 
-## Open points for Davi
+## Follow-up decisions (2026-11-27)
 
-- **Live character counter** would need limits on the client, e.g. a `GET /sites/{id}/texts/meta`
-  for logged-in editors. Phase 2 candidate.
-- **Multiline texts**: line breaks are stored (`\n`) but HTML collapses them on render. Options:
-  render with `white-space: pre-line` on multiline texts, or keep single paragraphs only.
+- **Multiline texts**: `<Text>` renders `\n` as `<br>` elements (React elements, never HTML).
+  Single-line texts cannot contain `\n` (the central API rejects it), so no `kind` is needed on the
+  site. Shift+Enter adds the line break in the overlay; Esc restores the original nodes.
+- **Live character counter**: not in the overlay. The panel (Phase 2) shows limits; the overlay
+  keeps showing the central API's limit message on save.

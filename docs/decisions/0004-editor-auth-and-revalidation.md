@@ -42,7 +42,9 @@ Status: accepted
 - The site calls `revalidateTag(tag, { expire: 0 })` (Next 16): stale content is not served, so
   the reload after a save already has the new text. `"max"` would serve the old HTML once.
 
-## Not done in Phase 1
+## Login rate limiting (added 2026-11-27)
 
-- Login rate limiting (Better Auth's limiter only covers its own HTTP handler, which we do not
-  expose). Needed before real users.
+Better Auth's limiter only covers its own HTTP handler, which we do not expose. The login route
+counts failures per email in `activity_log` (`auth.login_failed`): 5 failures in 15 minutes
+answer `429 too_many_attempts`, checked before the password. It works across instances. Known
+trade-off: anyone can lock an account for 15 minutes by failing on purpose.

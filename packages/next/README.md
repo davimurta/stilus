@@ -63,6 +63,7 @@ export async function generateMetadata() {
 ```
 
 - `children` is the default text and must be a plain string.
+- Line breaks in a stored value render as `<br>` (multiline texts).
 - Values are always rendered as plain text (React escapes them). `dangerouslySetInnerHTML` is
   never forwarded.
 - Client Components receive texts as props from a Server Component.

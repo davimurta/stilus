@@ -37,6 +37,7 @@ A malformed `siteId` answers `400 invalid_request`.
 
 Body `{ email, password }`. Answers `{ token, user, sites }`, where `sites` lists the sites the
 user can edit (`role`: `admin` | `editor`). Wrong email or password: `401 invalid_credentials`.
+After 5 failures for the same email in 15 minutes: `429 too_many_attempts`.
 Sessions are Better Auth sessions (7 days); send the token as `Authorization: Bearer <token>`.
 
 ### `POST /api/v1/auth/logout`

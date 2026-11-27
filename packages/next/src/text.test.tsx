@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Text } from "./text.js";
 import { t } from "./server.js";
@@ -91,6 +92,22 @@ describe("Text", () => {
 
     expect(element.props.children).toBe(payload);
     expect(element.props).not.toHaveProperty("dangerouslySetInnerHTML");
+  });
+});
+
+describe("multiline texts", () => {
+  it("renders line breaks as <br> and keeps every line escaped", async () => {
+    stubApi({ "about.body": "Linha 1\n<b>Linha 2</b>" });
+    const element = (await Text({ as: "p", k: "about.body", children: "Padrão" })) as Rendered;
+    expect(renderToStaticMarkup(element)).toBe(
+      '<p data-stilus-key="about.body">Linha 1<br/>&lt;b&gt;Linha 2&lt;/b&gt;</p>',
+    );
+  });
+
+  it("keeps a single-line text as a plain string child", async () => {
+    stubApi({ "home.title": "Uma linha" });
+    const element = (await Text({ k: "home.title", children: "Padrão" })) as Rendered;
+    expect(element.props.children).toBe("Uma linha");
   });
 });
 

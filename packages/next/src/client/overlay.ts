@@ -53,7 +53,12 @@ export function mountOverlay({ apiBase = "/api/stilus" }: OverlayOptions = {}): 
 
   const storage = window.sessionStorage;
   const root = document.documentElement;
-  let active: { element: HTMLElement; key: string; original: string } | null = null;
+  let active: {
+    element: HTMLElement;
+    key: string;
+    original: string;
+    originalNodes: Node[];
+  } | null = null;
   let busy = false;
 
   const style = document.createElement("style");
@@ -129,7 +134,13 @@ export function mountOverlay({ apiBase = "/api/stilus" }: OverlayOptions = {}): 
   function start(element: HTMLElement) {
     const key = element.getAttribute("data-stilus-key");
     if (!key) return;
-    active = { element, key, original: element.textContent ?? "" };
+    active = {
+      element,
+      key,
+      original: normalizeEditedText(element.innerText),
+      // Restored on cancel, so line breaks (<br>) of multiline texts come back too.
+      originalNodes: Array.from(element.childNodes, (node) => node.cloneNode(true)),
+    };
     element.setAttribute("data-stilus-active", "");
     try {
       element.contentEditable = "plaintext-only";
@@ -155,7 +166,7 @@ export function mountOverlay({ apiBase = "/api/stilus" }: OverlayOptions = {}): 
 
   function cancel() {
     if (!active) return;
-    active.element.textContent = active.original;
+    active.element.replaceChildren(...active.originalNodes);
     finish();
     setStatus(messages.idle);
   }

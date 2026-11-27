@@ -11,6 +11,7 @@ the published site, click a text, change it and save. The page regenerates in se
 
 ```
 apps/
+  panel/          Central API (and later the admin panel), Postgres + Drizzle
   example-site/   Next.js site used to develop and test the SDK
 packages/
   shared/         Shared types and zod schemas (text key format)
@@ -22,11 +23,13 @@ e2e/              Playwright end-to-end tests
 
 - Node.js 24 (see `.nvmrc`)
 - pnpm via Corepack: `corepack enable`
+- Docker (Postgres for development and integration tests)
 
 ## Scripts
 
 | Command          | What it does                                                     |
 | ---------------- | ---------------------------------------------------------------- |
+| `pnpm db:up`     | Starts Postgres 17 (docker compose, port 54329)                  |
 | `pnpm lint`      | ESLint in every package and in the root files                    |
 | `pnpm typecheck` | TypeScript in every package and in the root files                |
 | `pnpm test`      | Vitest unit tests                                                |

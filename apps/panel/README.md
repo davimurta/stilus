@@ -33,6 +33,18 @@ Auth: `Authorization: Bearer <site_api_key>`.
 Only `active` texts are returned. An unknown site and a wrong key both answer `401 unauthorized`.
 A malformed `siteId` answers `400 invalid_request`.
 
+### `POST /api/v1/sites/{siteId}/sync`
+
+Auth: site API key. Called by `stilus sync`. Body
+`{ keys: [{ key, defaultValue, description?, page?, kind? }] }` (1 to 5000 unique keys).
+Answers `{ created, orphaned, unchanged }` (lists of keys).
+
+- New keys are created with their default text.
+- Existing keys get fresh metadata and become active again. A value never edited follows the new
+  default; an edited value is kept.
+- Active keys missing from the list become `orphan`: kept with their history, left out of
+  `GET texts`. If a rendered value changed, the site is revalidated.
+
 ### `POST /api/v1/auth/login`
 
 Body `{ email, password }`. Answers `{ token, user, sites }`, where `sites` lists the sites the

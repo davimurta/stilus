@@ -1,15 +1,16 @@
 import type { z } from "zod";
 import { apiError } from "./api-errors";
 
-/** Max accepted JSON body size, in bytes. Texts are capped far below this. */
+/** Default max JSON body size, in bytes. Texts are capped far below this. */
 const MAX_BODY_BYTES = 64 * 1024;
 
 export async function readJson<T extends z.ZodType>(
   request: Request,
   schema: T,
+  maxBytes = MAX_BODY_BYTES,
 ): Promise<{ ok: true; data: z.infer<T> } | { ok: false; response: Response }> {
   const raw = await request.text();
-  if (Buffer.byteLength(raw, "utf8") > MAX_BODY_BYTES) {
+  if (Buffer.byteLength(raw, "utf8") > maxBytes) {
     return { ok: false, response: apiError("invalid_request", "Request body is too large.") };
   }
   let json: unknown;

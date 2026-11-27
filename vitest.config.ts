@@ -5,6 +5,9 @@ const panelSrc = fileURLToPath(new URL("./apps/panel/src", import.meta.url));
 // Tests read workspace packages from source, so `pnpm test` does not need a prior build.
 const sharedSrc = fileURLToPath(new URL("./packages/shared/src/index.ts", import.meta.url));
 const alias = { "@": panelSrc, "@stilus/shared": sharedSrc };
+const serverOnlyStub = fileURLToPath(
+  new URL("./packages/next/test/server-only-stub.ts", import.meta.url),
+);
 const testDatabaseUrl =
   process.env.TEST_DATABASE_URL ?? "postgres://stilus:stilus@localhost:54329/stilus_test";
 
@@ -12,10 +15,10 @@ export default defineConfig({
   test: {
     projects: [
       {
-        resolve: { alias },
+        resolve: { alias: { ...alias, "server-only": serverOnlyStub } },
         test: {
           name: "unit",
-          include: ["packages/*/src/**/*.test.ts", "apps/panel/src/**/*.test.ts"],
+          include: ["packages/*/src/**/*.test.{ts,tsx}", "apps/panel/src/**/*.test.ts"],
         },
       },
       {

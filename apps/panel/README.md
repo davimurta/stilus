@@ -9,6 +9,13 @@ Central Stilus service: REST API (`/api/v1`) and the admin panel. Postgres + Dri
 - `/sites/{siteId}`: texts of a site with search (key, text, description), page filter and
   status filter (in use / orphan / all). Badges: **Órfão** (key no longer in the code) and
   **Novo** (created in the last 7 days). A site the user is not a member of answers 404.
+- `/sites/{siteId}/textos/{key}`: edit a text with a live character counter (the limit is also
+  enforced by the server), see its history (author and date) and restore any version. A restore is
+  a normal edit, so it can be undone too.
+- When the last call to the site's revalidation webhook failed, the site pages show
+  "Salvo, atualização do site pendente" with a **Revalidar agora** button.
+- Every change from the panel goes through the same code as the API: permission check, validation,
+  version, activity log and the signed webhook.
 
 ## Local setup
 

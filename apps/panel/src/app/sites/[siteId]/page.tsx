@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PanelHeader } from "@/components/header";
+import { RevalidationBanner } from "@/components/revalidation-banner";
 import { getDb } from "@/db/client";
 import { messages } from "@/lib/messages";
 import { requireSiteAccess } from "@/lib/panel-access";
+import { getRevalidationStatus } from "@/lib/revalidation";
 import { listSitePages, listSiteTexts, textFiltersSchema } from "@/lib/site-texts";
 
 export const metadata: Metadata = { title: "Textos" };
@@ -24,9 +27,10 @@ export default async function SiteTextsPage({ params, searchParams }: Props) {
     status: typeof raw.status === "string" ? raw.status : undefined,
   });
   const db = getDb();
-  const [rows, pages] = await Promise.all([
+  const [rows, pages, revalidation] = await Promise.all([
     listSiteTexts(db, site.id, filters),
     listSitePages(db, site.id),
+    getRevalidationStatus(db, site.id),
   ]);
   const t = messages.texts;
 
@@ -35,6 +39,7 @@ export default async function SiteTextsPage({ params, searchParams }: Props) {
       <PanelHeader user={user} />
       <main>
         <h1>{t.title(site.name)}</h1>
+        <RevalidationBanner siteId={site.id} status={revalidation} />
         <form className="filters" role="search">
           <label className="field">
             {t.search}
@@ -86,7 +91,12 @@ export default async function SiteTextsPage({ params, searchParams }: Props) {
               {rows.map((row) => (
                 <tr key={row.id} data-key={row.key}>
                   <td className="key">
-                    {row.key}
+                    <Link
+                      href={`/sites/${site.id}/textos/${row.key}`}
+                      aria-label={`${t.edit} ${row.key}`}
+                    >
+                      {row.key}
+                    </Link>
                     {row.status === "orphan" ? (
                       <span className="badge orphan">{t.badgeOrphan}</span>
                     ) : null}

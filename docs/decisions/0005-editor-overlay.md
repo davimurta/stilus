@@ -5,8 +5,8 @@ Status: accepted
 
 ## Decision
 
-- **Separate entry points**: `@stilus/next/loader` (tiny client component) and
-  `@stilus/next/client` (login form). The overlay module is only reachable through the loader's
+- **Separate entry points**: `@davimurta/stilus-next/loader` (tiny client component) and
+  `@davimurta/stilus-next/client` (login form). The overlay module is only reachable through the loader's
   dynamic `import()`, so bundlers put it in its own chunk. Verified by e2e: no script fetched by an
   anonymous visitor contains overlay code; a logged-in editor's page does.
 - **Plain DOM, not React**, for the overlay: it edits server-rendered elements in place and the page

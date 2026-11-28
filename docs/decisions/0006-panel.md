@@ -32,5 +32,5 @@ Status: accepted
 - Never-edited values follow a changed default; edited values are never overwritten.
 - An empty sync is refused by both the CLI and the API.
 - The CLI parses with the TypeScript compiler API, only follows `Text`/`t` imported from
-  `@stilus/next`, and applies React's JSX whitespace rule to default texts.
+  `@davimurta/stilus-next`, and applies React's JSX whitespace rule to default texts.
 - `page` = first segment of the key. `kind` comes from the `multiline` prop of `<Text>`.

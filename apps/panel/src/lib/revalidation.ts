@@ -1,4 +1,4 @@
-import { SIGNATURE_HEADER, signWebhookBody } from "@stilus/shared";
+import { SIGNATURE_HEADER, signWebhookBody } from "@davimurta/stilus-shared";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import type { Database } from "../db/client";
 import { activityLog, sites } from "../db/schema";

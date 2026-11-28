@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 const panelSrc = fileURLToPath(new URL("./apps/panel/src", import.meta.url));
 // Tests read workspace packages from source, so `pnpm test` does not need a prior build.
 const sharedSrc = fileURLToPath(new URL("./packages/shared/src/index.ts", import.meta.url));
-const alias = { "@": panelSrc, "@stilus/shared": sharedSrc };
+const alias = { "@": panelSrc, "@davimurta/stilus-shared": sharedSrc };
 const serverOnlyStub = fileURLToPath(
   new URL("./packages/next/test/server-only-stub.ts", import.meta.url),
 );

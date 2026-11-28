@@ -1,12 +1,12 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 
-const ROUTE = `import { createStilusHandlers } from "@stilus/next";
+const ROUTE = `import { createStilusHandlers } from "@davimurta/stilus-next";
 
 export const { GET, POST } = createStilusHandlers();
 `;
 
-const EDIT_PAGE = `import { LoginForm } from "@stilus/next/client";
+const EDIT_PAGE = `import { LoginForm } from "@davimurta/stilus-next/client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -72,7 +72,7 @@ export function initProject(root: string): InitResult {
   const major = nextMajor(root);
   if (major === null) result.warnings.push("Next.js not found in package.json.");
   else if (major !== 16)
-    result.warnings.push(`@stilus/next supports Next 16; this project uses ${major}.`);
+    result.warnings.push(`@davimurta/stilus-next supports Next 16; this project uses ${major}.`);
 
   const write = (path: string, content: string) => {
     const full = join(root, path);
@@ -105,13 +105,13 @@ export function initProject(root: string): InitResult {
 
 export const LAYOUT_INSTRUCTIONS = `Add the loader to the root layout (it renders nothing for visitors):
 
-  import { StilusLoader } from "@stilus/next/loader";
+  import { StilusLoader } from "@davimurta/stilus-next/loader";
   // inside <body>, after the content:
   <StilusLoader />`;
 
 export const NEXT_STEPS = `Next steps:
-  1. Install the SDK: pnpm add @stilus/next
+  1. Install the SDK: pnpm add @davimurta/stilus-next
   2. Create the site on the panel (admin create-site) and fill STILUS_* in .env.local
      and in your host's environment.
   3. Mark texts: <Text k="home.hero.title">Default text</Text>, await t("home.meta.title", "...").
-  4. Run: stilus sync (locally or in CI, before next build).`;
+  4. Run: pnpm exec stilus sync (CLI: pnpm add -D @davimurta/stilus), locally or in CI.`;

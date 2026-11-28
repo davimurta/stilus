@@ -1,4 +1,4 @@
-import { textKeySchema } from "@stilus/shared";
+import { textKeySchema } from "@davimurta/stilus-shared";
 import { z } from "zod";
 import type { Database } from "../db/client";
 import { apiError } from "./api-errors";

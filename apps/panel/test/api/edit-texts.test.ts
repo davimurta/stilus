@@ -1,4 +1,4 @@
-import { verifyWebhook } from "@stilus/shared";
+import { verifyWebhook } from "@davimurta/stilus-shared";
 import { asc, eq } from "drizzle-orm";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PUT } from "@/app/api/v1/sites/[siteId]/texts/[key]/route";

@@ -1,7 +1,6 @@
 {
-  "name": "@stilus/shared",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@davimurta/stilus-shared",
+  "version": "0.1.0",
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -16,9 +15,22 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "zod": "4.6.7"
+  },
+  "description": "Shared schemas of Stilus (internal).",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davimurta/stilus.git",
+    "directory": "packages/shared"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.9"
   }
 }

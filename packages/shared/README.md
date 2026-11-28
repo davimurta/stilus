@@ -1,4 +1,4 @@
-# @stilus/shared
+# @davimurta/stilus-shared
 
 Internal package with types and zod schemas shared by the Stilus SDK, CLI and central API.
 
@@ -7,7 +7,7 @@ Internal package with types and zod schemas shared by the Stilus SDK, CLI and ce
 Keys follow `page.section.name`: lowercase, dot-separated, hyphens allowed after the first segment.
 
 ```ts
-import { isValidTextKey, textKeySchema } from "@stilus/shared";
+import { isValidTextKey, textKeySchema } from "@davimurta/stilus-shared";
 
 isValidTextKey("home.hero.title"); // true
 textKeySchema.parse("Home.Hero"); // throws

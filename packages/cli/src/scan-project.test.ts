@@ -15,7 +15,7 @@ function project(files: Record<string, string>) {
   return root;
 }
 
-const imp = `import { Text, t } from "@stilus/next";\n`;
+const imp = `import { Text, t } from "@davimurta/stilus-next";\n`;
 
 describe("scanProject", () => {
   it("merges keys across files and derives the page from the first key segment", () => {

@@ -4,7 +4,7 @@ import { runAdmin } from "@/admin/run";
 import { accounts, memberships, sites, users } from "@/db/schema";
 import { getUserFromRequest } from "@/lib/auth";
 import { authenticateSite } from "@/lib/site-auth";
-import { verifyWebhook, signWebhookBody } from "@stilus/shared";
+import { verifyWebhook, signWebhookBody } from "@davimurta/stilus-shared";
 import { createSite, createUser, db, login } from "../helpers";
 
 async function admin(args: string[], stdin = "") {

@@ -1,10 +1,10 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import { isValidTextKey, type SyncKey } from "@stilus/shared";
+import { isValidTextKey, type SyncKey } from "@davimurta/stilus-shared";
 import ts from "typescript";
 import { normalizeJsxText } from "./jsx-text.js";
 
-const SDK_MODULE = "@stilus/next";
+const SDK_MODULE = "@davimurta/stilus-next";
 const SOURCE_EXTENSIONS = /\.(tsx|ts|jsx|js|mjs)$/;
 const IGNORED_DIRECTORIES = new Set(["node_modules", ".git", "dist", "build", "out", "coverage"]);
 
@@ -26,7 +26,7 @@ export type ScanResult = {
   warnings: ScanProblem[];
 };
 
-/** Scans one source file. Only `Text` and `t` imported from @stilus/next are considered. */
+/** Scans one source file. Only `Text` and `t` imported from @davimurta/stilus-next are considered. */
 export function scanSource(fileName: string, code: string): ScanResult {
   const kind = fileName.endsWith("x") ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
   const source = ts.createSourceFile(fileName, code, ts.ScriptTarget.Latest, true, kind);

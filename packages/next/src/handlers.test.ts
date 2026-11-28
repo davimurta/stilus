@@ -1,4 +1,4 @@
-import { WEBHOOK_MAX_AGE_MS, signWebhookBody } from "@stilus/shared";
+import { WEBHOOK_MAX_AGE_MS, signWebhookBody } from "@davimurta/stilus-shared";
 import { describe, expect, it, vi } from "vitest";
 import { createStilusHandlers } from "./handlers.js";
 

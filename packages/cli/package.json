@@ -1,9 +1,8 @@
 {
-  "name": "stilus",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@davimurta/stilus",
+  "version": "0.1.0",
   "license": "MIT",
-  "description": "Stilus CLI: finds the editable texts of a Next.js site and syncs them.",
+  "description": "Stilus CLI: init, scan and sync the editable texts of a Next.js site.",
   "type": "module",
   "bin": {
     "stilus": "./dist/cli.js"
@@ -14,11 +13,23 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@stilus/shared": "workspace:*",
+    "@davimurta/stilus-shared": "workspace:*",
     "typescript": "6.0.3",
     "zod": "4.6.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davimurta/stilus.git",
+    "directory": "packages/cli"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.9"
   }
 }

@@ -1,4 +1,4 @@
-import { LoginForm } from "@stilus/next/client";
+import { LoginForm } from "@davimurta/stilus-next/client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

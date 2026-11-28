@@ -1,4 +1,4 @@
-# @stilus/next
+# @davimurta/stilus-next
 
 Stilus SDK for Next.js (App Router, Next 16). Renders editable texts on the server, with ISR and
 a default text in the code for every key.
@@ -17,7 +17,7 @@ STILUS_REVALIDATE_SECRET=<site revalidate secret, 32+ characters>
 Route handlers, in `app/api/stilus/[...stilus]/route.ts`:
 
 ```ts
-import { createStilusHandlers } from "@stilus/next";
+import { createStilusHandlers } from "@davimurta/stilus-next";
 
 export const { GET, POST } = createStilusHandlers();
 ```
@@ -25,7 +25,7 @@ export const { GET, POST } = createStilusHandlers();
 Editor loader, once in the root layout (renders nothing):
 
 ```tsx
-import { StilusLoader } from "@stilus/next/loader";
+import { StilusLoader } from "@davimurta/stilus-next/loader";
 
 // inside <body>
 <StilusLoader />;
@@ -34,7 +34,7 @@ import { StilusLoader } from "@stilus/next/loader";
 Login page for editors, e.g. `app/editar/page.tsx` (static, no cookies read on render):
 
 ```tsx
-import { LoginForm } from "@stilus/next/client";
+import { LoginForm } from "@davimurta/stilus-next/client";
 
 export default function EditLoginPage() {
   return <LoginForm />;
@@ -47,7 +47,7 @@ is logged once).
 ## Usage
 
 ```tsx
-import { Text, t } from "@stilus/next";
+import { Text, t } from "@davimurta/stilus-next";
 
 // Server Component. Renders <span data-stilus-key="home.hero.title">…</span>
 <Text k="home.hero.title" description="Título principal">Bem-vindo</Text>

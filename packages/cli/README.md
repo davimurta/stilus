@@ -1,4 +1,6 @@
-# stilus (CLI)
+# @davimurta/stilus (CLI)
+
+Install with `pnpm add -D @davimurta/stilus`; the command is `stilus`.
 
 Finds the editable texts of a Next.js site and syncs them with the central Stilus API.
 
@@ -24,7 +26,7 @@ The generated files are the same the example site is built and tested with.
 
 ## What it finds
 
-Only `Text` and `t` imported from `@stilus/next` (aliases work):
+Only `Text` and `t` imported from `@davimurta/stilus-next` (aliases work):
 
 ```tsx
 <Text as="h1" k="home.hero.title" description="Título principal">Bem-vindo</Text>

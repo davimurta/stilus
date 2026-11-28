@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { scanSource } from "./scan.js";
 
-const header = `import { Text, t } from "@stilus/next";\n`;
+const header = `import { Text, t } from "@davimurta/stilus-next";\n`;
 const scan = (code: string, withHeader = true) =>
   scanSource("app/page.tsx", (withHeader ? header : "") + code);
 
@@ -44,13 +44,13 @@ describe("scanSource: <Text>", () => {
 
   it("follows an aliased import", () => {
     const result = scan(
-      `import { Text as T } from "@stilus/next";\nconst a = <T k="home.a">Oi</T>;`,
+      `import { Text as T } from "@davimurta/stilus-next";\nconst a = <T k="home.a">Oi</T>;`,
       false,
     );
     expect(result.texts.map((text) => text.key)).toEqual(["home.a"]);
   });
 
-  it("ignores a Text component that does not come from @stilus/next", () => {
+  it("ignores a Text component that does not come from @davimurta/stilus-next", () => {
     const result = scan(
       `import { Text } from "./ui";\nconst a = <Text k="home.a">Oi</Text>;`,
       false,
@@ -113,7 +113,7 @@ describe("scanSource: t()", () => {
 
   it("follows an aliased import", () => {
     const result = scan(
-      `import { t as text } from "@stilus/next";\nconst a = text("home.a", "x");`,
+      `import { t as text } from "@davimurta/stilus-next";\nconst a = text("home.a", "x");`,
       false,
     );
     expect(result.texts.map((item) => item.key)).toEqual(["home.a"]);

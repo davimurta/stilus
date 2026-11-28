@@ -1,4 +1,4 @@
-import { Text } from "@stilus/next";
+import { Text } from "@davimurta/stilus-next";
 import Link from "next/link";
 
 export function SiteHeader() {

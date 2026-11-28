@@ -1,4 +1,4 @@
-import type { SyncKey, SyncResult } from "@stilus/shared";
+import type { SyncKey, SyncResult } from "@davimurta/stilus-shared";
 import { z } from "zod";
 
 const configSchema = z.object({

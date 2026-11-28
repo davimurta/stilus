@@ -1,7 +1,6 @@
 {
-  "name": "@stilus/next",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@davimurta/stilus-next",
+  "version": "0.1.0",
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -24,10 +23,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "@stilus/shared": "workspace:*",
+    "@davimurta/stilus-shared": "workspace:*",
     "server-only": "0.0.1",
     "zod": "4.6.7"
   },
@@ -41,5 +41,17 @@
     "next": "16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1"
+  },
+  "description": "Stilus SDK for Next.js: editable texts with ISR and an inline editor.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davimurta/stilus.git",
+    "directory": "packages/next"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.9"
   }
 }

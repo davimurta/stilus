@@ -1,6 +1,6 @@
 "use server";
 
-import { textKeySchema } from "@stilus/shared";
+import { textKeySchema } from "@davimurta/stilus-shared";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getDb } from "@/db/client";

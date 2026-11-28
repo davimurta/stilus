@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
-import { isValidTextKey } from "@stilus/shared";
+import { isValidTextKey } from "@davimurta/stilus-shared";
 import { exampleSiteTexts } from "@/db/example-site-texts";
 import { accounts, sites, texts, users } from "@/db/schema";
 import { seed } from "@/db/seed";

@@ -15,7 +15,7 @@ apps/
   example-site/   Next.js site used to develop and test the SDK
 packages/
   cli/            stilus: scan and sync the texts of a site
-  next/           @stilus/next: SDK (Text, t, route handlers, editor overlay)
+  next/           @davimurta/stilus-next: SDK (Text, t, route handlers, editor overlay)
   shared/         Shared types and zod schemas (text key format)
 docs/decisions/   Short architecture decision records
 e2e/              Playwright end-to-end tests

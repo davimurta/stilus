@@ -1,4 +1,4 @@
-import { textKeySchema } from "@stilus/shared";
+import { textKeySchema } from "@davimurta/stilus-shared";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";

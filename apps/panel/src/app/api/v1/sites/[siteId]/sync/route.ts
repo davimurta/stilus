@@ -1,4 +1,4 @@
-import { syncRequestSchema } from "@stilus/shared";
+import { syncRequestSchema } from "@davimurta/stilus-shared";
 import { z } from "zod";
 import { getDb } from "@/db/client";
 import { apiError, apiJson } from "@/lib/api-errors";

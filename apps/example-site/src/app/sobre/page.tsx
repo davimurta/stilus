@@ -1,4 +1,4 @@
-import { Text, t } from "@stilus/next";
+import { Text, t } from "@davimurta/stilus-next";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {

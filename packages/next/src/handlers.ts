@@ -1,4 +1,4 @@
-import { SIGNATURE_HEADER, textKeySchema, verifyWebhook } from "@stilus/shared";
+import { SIGNATURE_HEADER, textKeySchema, verifyWebhook } from "@davimurta/stilus-shared";
 import { revalidateTag } from "next/cache.js";
 import { z } from "zod";
 import { readHandlerConfig, type HandlerConfig } from "./config.js";

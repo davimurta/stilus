@@ -1,4 +1,4 @@
-import { signWebhookBody } from "@stilus/shared";
+import { signWebhookBody } from "@davimurta/stilus-shared";
 import { expect, test, type APIRequestContext } from "@playwright/test";
 import { ADMIN, OUTSIDER, PANEL_URL, REVALIDATE_SECRET, SITE_ID, SITE_URL } from "./support/env";
 

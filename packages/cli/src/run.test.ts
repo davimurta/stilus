@@ -12,7 +12,7 @@ const env = {
 
 function project(code: string) {
   const root = mkdtempSync(join(tmpdir(), "stilus-run-"));
-  writeFileSync(join(root, "page.tsx"), `import { Text } from "@stilus/next";\n${code}`);
+  writeFileSync(join(root, "page.tsx"), `import { Text } from "@davimurta/stilus-next";\n${code}`);
   return root;
 }
 

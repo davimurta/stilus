@@ -1,4 +1,4 @@
-import type { SyncKey, SyncResult } from "@stilus/shared";
+import type { SyncKey, SyncResult } from "@davimurta/stilus-shared";
 import { and, eq, inArray } from "drizzle-orm";
 import type { Database } from "../db/client";
 import { activityLog, texts, textVersions } from "../db/schema";

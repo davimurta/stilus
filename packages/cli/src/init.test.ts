@@ -112,6 +112,8 @@ describe("stilus init", () => {
     });
     expect(code).toBe(0);
     expect(out).toContain("created  app/editar/page.tsx");
-    expect(out.join("\n")).toContain('import { StilusLoader } from "@stilus/next/loader";');
+    expect(out.join("\n")).toContain(
+      'import { StilusLoader } from "@davimurta/stilus-next/loader";',
+    );
   });
 });

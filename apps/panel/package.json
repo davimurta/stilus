@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev --port 3200",
     "build": "next build",
-    "start": "next start --port 3200",
+    "start": "next start --port ${PORT:-3200}",
     "typecheck": "next typegen && tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "db:generate": "drizzle-kit generate",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@node-rs/argon2": "2.2.2",
-    "@stilus/shared": "workspace:*",
+    "@davimurta/stilus-shared": "workspace:*",
     "better-auth": "1.7.28",
     "drizzle-orm": "0.45.4",
     "next": "16.4.6",

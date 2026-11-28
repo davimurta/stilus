@@ -1,4 +1,4 @@
-import { StilusLoader } from "@stilus/next/loader";
+import { StilusLoader } from "@davimurta/stilus-next/loader";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/site-footer";

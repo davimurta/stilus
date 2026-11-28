@@ -1,5 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN, CHANGER, OUTSIDER, PANEL_URL, SITE_ID, SITE_URL } from "./support/env";
+import { randomUUID } from "node:crypto";
+import { createDatabase } from "../apps/panel/src/db/client";
+import { createUserWithPassword } from "../apps/panel/src/lib/users";
+import { ADMIN, E2E_DATABASE_URL, OUTSIDER, PANEL_URL, SITE_ID, SITE_URL } from "./support/env";
 
 async function panelLogin(page: Page, credentials = ADMIN) {
   await page.goto(`${PANEL_URL}/entrar`);
@@ -113,7 +116,23 @@ test("editing in the panel updates the site, and history restores the original",
   await expect.poll(rawContact, { timeout: 10_000 }).toContain(`>${original}</p>`);
 });
 
+/** A fresh user per attempt, so a retry never finds the password already changed. */
+async function freshUser() {
+  const credentials = {
+    email: `changer-${randomUUID()}@example.com`,
+    password: "e2e-changer-password",
+  };
+  const { db, sql } = createDatabase(E2E_DATABASE_URL);
+  try {
+    await createUserWithPassword(db, { name: "Changer", ...credentials });
+  } finally {
+    await sql.end();
+  }
+  return credentials;
+}
+
 test("a user changes their own password", async ({ page }) => {
+  const CHANGER = await freshUser();
   await panelLogin(page, CHANGER);
   await expect(page).toHaveURL(`${PANEL_URL}/sites`);
   await page.getByRole("link", { name: "Minha conta" }).click();
@@ -139,6 +158,7 @@ test("a user changes their own password", async ({ page }) => {
   );
 
   await page.getByRole("button", { name: "Sair" }).click();
+  await expect(page).toHaveURL(`${PANEL_URL}/entrar`);
   await panelLogin(page, CHANGER);
   await expect(page.getByRole("alert").filter({ hasText: "incorretos" })).toBeVisible();
   await panelLogin(page, { email: CHANGER.email, password: "uma-senha-nova-longa" });

@@ -1,5 +1,5 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { dirname, join, relative } from "node:path";
 import { isValidTextKey, type SyncKey } from "@davimurta/stilus-shared";
 import ts from "typescript";
 import { normalizeJsxText } from "./jsx-text.js";
@@ -30,6 +30,18 @@ export type ScanResult = {
 export function scanSource(fileName: string, code: string): ScanResult {
   const kind = fileName.endsWith("x") ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
   const source = ts.createSourceFile(fileName, code, ts.ScriptTarget.Latest, true, kind);
+  return scanSourceFile(source, fileName);
+}
+
+/**
+ * With a type checker, default texts may also come from constants whose type is a string
+ * literal (e.g. `heroContent.title` from an `as const` object). Keys must stay literal.
+ */
+function scanSourceFile(
+  source: ts.SourceFile,
+  fileName: string,
+  checker?: ts.TypeChecker,
+): ScanResult {
   const result: ScanResult = { texts: [], errors: [], warnings: [] };
 
   const textNames = new Set<string>();
@@ -61,6 +73,16 @@ export function scanSource(fileName: string, code: string): ScanResult {
     if (ts.isJsxExpression(node)) return staticString(node.expression);
     if (ts.isParenthesizedExpression(node)) return staticString(node.expression);
     return null;
+  }
+
+  /** A literal, or an expression whose type is a single string literal (needs the checker). */
+  function constantString(node: ts.Node | undefined): string | null {
+    const literal = staticString(node);
+    if (literal !== null || !node || !checker) return literal;
+    const expression = ts.isJsxExpression(node) ? node.expression : node;
+    if (!expression) return null;
+    const type = checker.getTypeAtLocation(expression);
+    return type.isStringLiteral() ? type.value : null;
   }
 
   function addText(
@@ -124,9 +146,12 @@ export function scanSource(fileName: string, code: string): ScanResult {
         // Each JSX text chunk is normalized on its own, like React does.
         defaultValue += normalizeJsxText(child.text);
       } else {
-        const value = staticString(child);
+        const value = constantString(child);
         if (value === null) {
-          return error(child, `The default text of <Text k="${key}"> must be plain text.`);
+          return error(
+            child,
+            `The default text of <Text k="${key}"> must be plain text or a constant string (as const).`,
+          );
         }
         defaultValue += value;
       }
@@ -138,9 +163,12 @@ export function scanSource(fileName: string, code: string): ScanResult {
     const [keyArg, fallbackArg] = node.arguments;
     const key = staticString(keyArg);
     if (key === null) return error(node, "The first argument of t() must be a string literal key.");
-    const fallback = staticString(fallbackArg);
+    const fallback = constantString(fallbackArg);
     if (fallback === null) {
-      return error(node, `The second argument of t("${key}") must be a string literal.`);
+      return error(
+        node,
+        `The second argument of t("${key}") must be a string literal or a constant string (as const).`,
+      );
     }
     addText(node, key, fallback, { multiline: false });
   }
@@ -173,12 +201,35 @@ function listSourceFiles(directory: string): string[] {
   return files.sort();
 }
 
+function compilerOptions(directory: string): ts.CompilerOptions {
+  const fallback: ts.CompilerOptions = {
+    jsx: ts.JsxEmit.Preserve,
+    allowJs: true,
+    target: ts.ScriptTarget.Latest,
+    module: ts.ModuleKind.ESNext,
+    moduleResolution: ts.ModuleResolutionKind.Bundler,
+  };
+  const configPath = ts.findConfigFile(directory, ts.sys.fileExists, "tsconfig.json");
+  if (!configPath || !configPath.startsWith(directory)) return fallback;
+  const config = ts.readConfigFile(configPath, ts.sys.readFile);
+  if (config.error) return fallback;
+  const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, dirname(configPath));
+  return { ...parsed.options, noEmit: true, allowJs: true };
+}
+
 /** Scans a project directory and merges what it finds into one entry per key. */
 export function scanProject(directory: string): ScanResult & { keys: SyncKey[] } {
   const merged: ScanResult = { texts: [], errors: [], warnings: [] };
-  for (const path of listSourceFiles(directory)) {
+  const files = listSourceFiles(directory);
+  // The program follows imports (and tsconfig paths) so constants can be resolved.
+  const program = ts.createProgram({ rootNames: files, options: compilerOptions(directory) });
+  const checker = program.getTypeChecker();
+  for (const path of files) {
     const fileName = relative(directory, path);
-    const result = scanSource(fileName, readFileSync(path, "utf8"));
+    const source = program.getSourceFile(path);
+    const result = source
+      ? scanSourceFile(source, fileName, checker)
+      : scanSource(fileName, readFileSync(path, "utf8"));
     merged.texts.push(...result.texts);
     merged.errors.push(...result.errors);
     merged.warnings.push(...result.warnings);

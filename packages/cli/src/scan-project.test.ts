@@ -53,6 +53,70 @@ describe("scanProject", () => {
     expect(scanProject(root).keys.map((key) => key.key)).toEqual(["home.a"]);
   });
 
+  describe("default texts from constants", () => {
+    const constants = `export const hero = {
+  title: "CADA QUILÔMETRO",
+  paragraphs: ["Primeiro parágrafo", "Segundo parágrafo"],
+} as const;
+export const LABEL = "Saiba mais";
+export let loose = "pode mudar";
+export const mutable = { title: "sem as const" };
+`;
+
+    it("reads `as const` values through imports and tsconfig paths", () => {
+      const root = project({
+        "tsconfig.json": JSON.stringify({
+          compilerOptions: { jsx: "preserve", baseUrl: ".", paths: { "@/*": ["./src/*"] } },
+        }),
+        "src/constants/home.ts": constants,
+        "src/components/hero.tsx": `import { Text as StilusText, t } from "@davimurta/stilus-next";
+import { hero, LABEL } from "@/constants/home";
+import * as copy from "../constants/home";
+export const a = <StilusText k="home.hero.title">{hero.title}</StilusText>;
+export const b = <StilusText multiline k="home.about.first">{hero.paragraphs[0]}</StilusText>;
+export const c = <StilusText k="home.cta">{copy.LABEL}</StilusText>;
+export const d = () => t("home.meta.title", LABEL);`,
+      });
+
+      const result = scanProject(root);
+
+      expect(result.errors).toEqual([]);
+      expect(Object.fromEntries(result.keys.map((key) => [key.key, key.defaultValue]))).toEqual({
+        "home.hero.title": "CADA QUILÔMETRO",
+        "home.about.first": "Primeiro parágrafo",
+        "home.cta": "Saiba mais",
+        "home.meta.title": "Saiba mais",
+      });
+    });
+
+    it.each([
+      ["a `let` variable", "{loose}"],
+      ["an object without as const", "{mutable.title}"],
+      ["a template with a variable that can change", "{`${loose}!`}"],
+    ])("rejects %s", (_label, child) => {
+      const root = project({
+        "constants.ts": constants,
+        "page.tsx": `import { Text } from "@davimurta/stilus-next";
+import { LABEL, loose, mutable } from "./constants";
+export const a = <Text k="home.a">${child}</Text>;`,
+      });
+      const result = scanProject(root);
+      expect(result.errors[0]?.message).toMatch(/constant string \(as const\)/);
+    });
+
+    it("still requires a literal key", () => {
+      const root = project({
+        "constants.ts": constants,
+        "page.tsx": `import { Text } from "@davimurta/stilus-next";
+import { LABEL } from "./constants";
+export const a = <Text k={LABEL}>x</Text>;`,
+      });
+      expect(scanProject(root).errors[0]?.message).toMatch(
+        /k prop of <Text> must be a string literal/,
+      );
+    });
+  });
+
   it("finds exactly the texts of the example site, with the seed defaults, kinds and pages", () => {
     const exampleSite = fileURLToPath(new URL("../../../apps/example-site", import.meta.url));
     const result = scanProject(exampleSite);

@@ -1,0 +1,38 @@
+name: Migrate
+
+# Applies the panel migrations to the production database.
+# Needs the DATABASE_URL repository secret; without it the job does nothing.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: migrate
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - name: Skip without DATABASE_URL
+        if: env.DATABASE_URL == ''
+        run: echo "DATABASE_URL secret not set; nothing to migrate."
+
+      - uses: actions/checkout@v4
+        if: env.DATABASE_URL != ''
+
+      - uses: actions/setup-node@v4
+        if: env.DATABASE_URL != ''
+        with:
+          node-version-file: .nvmrc
+
+      - name: Apply migrations
+        if: env.DATABASE_URL != ''
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+          pnpm --filter panel db:migrate

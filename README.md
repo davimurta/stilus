@@ -41,6 +41,10 @@ e2e/              Playwright end-to-end tests
 
 First run of the e2e suite needs a browser: `pnpm exec playwright install chromium`.
 
+## Deploy
+
+See [docs/deploy.md](docs/deploy.md): panel on Vercel, Postgres on Neon, then one site at a time.
+
 ## License
 
 MIT

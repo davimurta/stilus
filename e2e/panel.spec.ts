@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN, OUTSIDER, PANEL_URL, SITE_ID, SITE_URL } from "./support/env";
+import { ADMIN, CHANGER, OUTSIDER, PANEL_URL, SITE_ID, SITE_URL } from "./support/env";
 
 async function panelLogin(page: Page, credentials = ADMIN) {
   await page.goto(`${PANEL_URL}/entrar`);
@@ -102,4 +102,36 @@ test("editing in the panel updates the site, and history restores the original",
   await expect(history).toHaveCount(3);
   await expect(field).toHaveValue(original);
   await expect.poll(rawContact, { timeout: 10_000 }).toContain(`>${original}</p>`);
+});
+
+test("a user changes their own password", async ({ page }) => {
+  await panelLogin(page, CHANGER);
+  await expect(page).toHaveURL(`${PANEL_URL}/sites`);
+  await page.getByRole("link", { name: "Minha conta" }).click();
+  const form = page.getByRole("form", { name: "Trocar senha" });
+  // React resets the form after each action, so every attempt fills all fields.
+  async function attempt(current: string, next: string, confirm: string) {
+    await form.getByLabel("Senha atual").fill(current);
+    await form.getByLabel("Nova senha", { exact: true }).fill(next);
+    await form.getByLabel("Repita a nova senha").fill(confirm);
+    await form.getByRole("button", { name: "Trocar senha" }).click();
+  }
+
+  await attempt("not-my-password", "uma-senha-nova-longa", "uma-senha-nova-longa");
+  await expect(form.getByRole("status")).toHaveText("A senha atual está incorreta.");
+
+  await attempt(CHANGER.password, "uma-senha-nova-longa", "outra-coisa-qualquer");
+  await expect(form.getByRole("status")).toHaveText("As duas senhas novas não são iguais.");
+
+  await attempt(CHANGER.password, "uma-senha-nova-longa", "uma-senha-nova-longa");
+  await expect(page).toHaveURL(`${PANEL_URL}/conta?senha=trocada`);
+  await expect(page.getByRole("main").getByRole("status")).toHaveText(
+    "Senha trocada. As outras sessões foram encerradas.",
+  );
+
+  await page.getByRole("button", { name: "Sair" }).click();
+  await panelLogin(page, CHANGER);
+  await expect(page.getByRole("alert").filter({ hasText: "incorretos" })).toBeVisible();
+  await panelLogin(page, { email: CHANGER.email, password: "uma-senha-nova-longa" });
+  await expect(page).toHaveURL(`${PANEL_URL}/sites`);
 });

@@ -8,6 +8,7 @@ import { seed } from "../../apps/panel/src/db/seed";
 import { createUserWithPassword } from "../../apps/panel/src/lib/users";
 import {
   ADMIN,
+  CHANGER,
   API_TEXTS,
   E2E_DATABASE_URL,
   OUTSIDER,
@@ -50,6 +51,7 @@ try {
     revalidateSecret: REVALIDATE_SECRET,
   });
   await createUserWithPassword(db, { name: "Outsider", ...OUTSIDER });
+  await createUserWithPassword(db, { name: "Changer", ...CHANGER });
   for (const [key, value] of Object.entries(API_TEXTS)) {
     await db
       .update(texts)

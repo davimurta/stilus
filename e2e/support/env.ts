@@ -18,6 +18,8 @@ export const REVALIDATE_SECRET = "e2e-only-revalidate-secret-000000000000";
 export const BETTER_AUTH_SECRET = "e2e-only-better-auth-secret-0000000000000";
 
 export const ADMIN = { email: "admin@example.com", password: "e2e-admin-password" };
+/** Only used by the password change test. */
+export const CHANGER = { email: "changer@example.com", password: "e2e-changer-password" };
 /** Has an account but no membership on the example site. */
 export const OUTSIDER = { email: "outsider@example.com", password: "e2e-outsider-password" };
 

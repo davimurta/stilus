@@ -10,7 +10,8 @@ const envSchema = z.object({ DATABASE_URL: z.url() });
 let instance: { db: Database; sql: postgres.Sql } | undefined;
 
 export function createDatabase(url: string) {
-  const sql = postgres(url, { max: 10 });
+  // prepare: false keeps it working behind transaction poolers (Neon "-pooler", PgBouncer).
+  const sql = postgres(url, { max: 10, prepare: false });
   return { db: drizzle(sql, { schema }), sql };
 }
 

@@ -11,6 +11,15 @@ async function panelLogin(page: Page, credentials = ADMIN) {
 const rowKeys = (page: Page) =>
   page.locator("tbody tr").evaluateAll((rows) => rows.map((row) => row.getAttribute("data-key")));
 
+test("the panel sends security headers and cannot be framed", async ({ request }) => {
+  const response = await request.get(`${PANEL_URL}/entrar`);
+  const headers = response.headers();
+  expect(headers["x-frame-options"]).toBe("DENY");
+  expect(headers["content-security-policy"]).toContain("frame-ancestors 'none'");
+  expect(headers["x-content-type-options"]).toBe("nosniff");
+  expect(headers["x-powered-by"]).toBeUndefined();
+});
+
 test("the panel asks for login", async ({ page }) => {
   await page.goto(`${PANEL_URL}/sites`);
   await expect(page).toHaveURL(`${PANEL_URL}/entrar`);

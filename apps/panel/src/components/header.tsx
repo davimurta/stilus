@@ -9,8 +9,9 @@ export function PanelHeader({ user }: { user: AuthenticatedUser }) {
       <Link href="/sites" className="brand">
         {messages.appTitle}
       </Link>
-      <nav aria-label="Painel">
+      <nav aria-label="Painel" className="nav">
         <Link href="/sites">{messages.nav.sites}</Link>
+        <Link href="/conta">{messages.nav.account}</Link>
       </nav>
       <form action={logout} className="user">
         <span>{user.name}</span>

@@ -211,3 +211,7 @@ td.value {
   gap: 0.35rem;
   justify-items: start;
 }
+.nav {
+  display: flex;
+  gap: 1rem;
+}

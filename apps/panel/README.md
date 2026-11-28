@@ -2,9 +2,30 @@
 
 Central Stilus service: REST API (`/api/v1`) and the admin panel. Postgres + Drizzle.
 
+## Administration (sites and users)
+
+Run against the database in `DATABASE_URL` (works in production; the seed does not):
+
+```bash
+pnpm --filter panel admin create-user --email ana@empresa.com --name "Ana"
+pnpm --filter panel admin create-site --name "Meu site" --domain meusite.com.br \
+  --revalidate-url https://meusite.com.br/api/stilus/revalidate --owner ana@empresa.com
+pnpm --filter panel admin grant --email bia@empresa.com --site <siteId> --role editor
+pnpm --filter panel admin revoke --email bia@empresa.com --site <siteId>
+pnpm --filter panel admin set-password --email ana@empresa.com   # also ends her sessions
+pnpm --filter panel admin rotate-site-key --site <siteId>
+pnpm --filter panel admin list-sites
+```
+
+- Passwords are generated (24 random characters) and printed once, unless `--password-stdin` is
+  given. Minimum 12 characters.
+- `create-site` prints `STILUS_SITE_ID`, `STILUS_SITE_KEY` and `STILUS_REVALIDATE_SECRET` once:
+  only the hash of the key is stored. The owner becomes the site's admin.
+
 ## Panel
 
 - `/entrar`: login (Better Auth cookie session, same 5-failures-in-15-minutes limit as the API).
+- `/conta`: change your own password (needs the current one; ends your other sessions).
 - `/sites`: sites the user is a member of.
 - `/sites/{siteId}`: texts of a site with search (key, text, description), page filter and
   status filter (in use / orphan / all). Badges: **Órfão** (key no longer in the code) and

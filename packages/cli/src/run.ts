@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
+import { LAYOUT_INSTRUCTIONS, NEXT_STEPS, initProject } from "./init.js";
 import { scanProject, type ScanProblem } from "./scan.js";
 import { readSyncConfig, sendSync } from "./sync.js";
 
@@ -11,6 +12,7 @@ export type Io = {
 };
 
 const USAGE = `Usage:
+  stilus init [dir]            Add the Stilus route, the /editar page and .env.example
   stilus scan [dir] [--json]   List the editable texts found in the code
   stilus sync [dir]            Scan and send the keys to the central API (needs STILUS_* env)
 
@@ -25,13 +27,30 @@ export async function run(args: string[], io: Io): Promise<number> {
   const json = rest.includes("--json");
   const directory = resolve(rest.find((arg) => !arg.startsWith("--")) ?? ".");
 
-  if (command !== "scan" && command !== "sync") {
+  if (command !== "scan" && command !== "sync" && command !== "init") {
     io.err(USAGE);
     return command === "help" || command === "--help" ? 0 : 1;
   }
   if (!existsSync(directory)) {
     io.err(`Directory not found: ${directory}`);
     return 1;
+  }
+
+  if (command === "init") {
+    try {
+      const init = initProject(directory);
+      for (const warning of init.warnings) io.err(`warning  ${warning}`);
+      for (const file of init.created) io.out(`created  ${file}`);
+      for (const file of init.skipped) io.out(`skipped  ${file} (already exists)`);
+      io.out("");
+      io.out(LAYOUT_INSTRUCTIONS);
+      io.out("");
+      io.out(NEXT_STEPS);
+      return 0;
+    } catch (error) {
+      io.err(error instanceof Error ? error.message : String(error));
+      return 1;
+    }
   }
 
   const result = scanProject(directory);

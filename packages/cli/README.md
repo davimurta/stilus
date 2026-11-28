@@ -3,12 +3,24 @@
 Finds the editable texts of a Next.js site and syncs them with the central Stilus API.
 
 ```bash
+stilus init [dir]            # add the route, the /editar page and .env.example
 stilus scan [dir] [--json]   # list the texts found in the code
 stilus sync [dir]            # scan, then POST the keys to the central API
 ```
 
 `dir` defaults to the current directory. `node_modules`, build output (`.next`, `dist`, `build`,
 `out`) and hidden folders are skipped.
+
+## Init
+
+Adds to a Next.js App Router project (in `app/` or `src/app/`), never overwriting a file:
+
+- `app/api/stilus/[...stilus]/route.ts`: login, logout, save, undo and the revalidation webhook
+- `app/editar/page.tsx`: the editors' login page
+- `.env.example`: the `STILUS_*` settings (appended if the file exists)
+
+Then it prints the line to add to the root layout (`<StilusLoader />`) and the next steps.
+The generated files are the same the example site is built and tested with.
 
 ## What it finds
 
